@@ -4,11 +4,14 @@ import json
 
 with open('job-offers.json', encoding="UTF-8") as job_offer_file:
     offers = json.load(job_offer_file)
-descriptions = [job['description'] for job in offers]
+descriptions = [job['description'] for job in offers
+                if isinstance(job, dict) and "description" in job]
+profiles = [job["profile"] for job in offers
+            if isinstance(job, dict) and "profile" in job]
 
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
-embeddings = model.encode(descriptions, convert_to_tensor=True)
+embeddings = model.encode(profiles, convert_to_tensor=True)
 cosine_scores = util.cos_sim(embeddings, embeddings)
 
 # Find the pairs with the highest cosine similarity scores
